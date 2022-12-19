@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Level 3 Roll Roll Roll Your Dice</title>
+    <style>
+      table {
+        background-color: #f2f2f2;
+        border: thick solid black;
+        font-weight: normal;
+      }
+      
+      th {
+        text-align: center;
+        width: 15%;
+        padding: 5px;
+      }
+
+      #freq {
+        padding: 4px;
+      }
+
+      td {
+        border: thin solid black;
+        padding: 3px;
+        text-align: center;
+      }
+
+      body {
+        background-color: #afcfed;
+        font-weight: bold;
+      }
+    </style>
+    <script>
+      function initialize() {
+        numberOfDice = 0;
+        numberOfRolls = 0;
+        mean = 0;
+        array = [];
+
+        document.getElementById("Triples").style.visibility = "hidden";
+        document.getElementById("Doubles").style.visibility = "hidden";
+        document.getElementById("doublesText").style.visibility = "hidden";
+        document.getElementById("triplesText").style.visibility = "hidden";
+        inputContainer = document.getElementById("diceOptions");
+      }
+
+      function rollDice() {
+        array.push(Math.floor(Math.random() * 6) + 1);
+      }
+
+      function recordData() {
+        array = [];
+        numberOfDice = inputContainer.dice.value;
+        numberOfRolls = inputContainer.numRolls.value;
+        console.log(numberOfDice);
+        console.log(numberOfRolls);
+        for (i = 0; i < numberOfRolls; i++) {
+          for (j = 0; j < numberOfDice; j++) {
+            rollDice();
+          }
+        }
+        calculateNumbers();
+      }
+
+      function getMean() {
+        total = 0;
+        for (let i = 0; i < array.length; i++) {
+          total += array[i];
+        }
+        mean = total / array.length;
+        return roundUp(mean);
+      }
+
+      function calculateNumbers() {
+        document.getElementById("Triples").style.visibility = "hidden";
+        document.getElementById("Doubles").style.visibility = "hidden";
+        document.getElementById("doublesText").style.visibility = "hidden";
+        document.getElementById("triplesText").style.visibility = "hidden";
+
+        document.getElementById("Mean").innerHTML = getMean();
+        document.getElementById("Mode").innerHTML = getMode();
+        if (numberOfDice > 1) {
+          document.getElementById("Doubles").innerHTML = getDoubles();
+          document.getElementById("Doubles").style.visibility = "visible";
+          document.getElementById("doublesText").style.visibility = "visible";
+        }
+        if (numberOfDice == 3) {
+          document.getElementById("Triples").innerHTML = getTriples();
+          document.getElementById("Triples").style.visibility = "visible";
+          document.getElementById("triplesText").style.visibility = "visible";
+        }
+        document.getElementById("Median").innerHTML = getMedian();
+      }
+
+      function roundUp(number) {
+        return (number * 100) % 1 > 0 ? Math.round(number * 100) / 100 : number;
+      }
+
+      function getFrequency(num) {
+        var result = 0;
+        for (var i = 0; i < array.length; i++) {
+          if (array[i] == num) {
+            result++;
+          }
+        }
+        return result;
+      }
+
+      function getMedian() {
+        array.sort();
+        console.log(array);
+        if (array.length % 2 == 0) {
+          val1 = array[array.length / 2];
+          val2 = array[array.length / 2 - 1];
+          console.log(val1);
+          console.log(val2);
+          return (val1 + val2) / 2;
+        } else {
+          console.log(array[array.length / 2 - 0.5]);
+          return array[array.length / 2 - 0.5];
+        }
+      }
+
+      function getMode() {
+        if(numberOfRolls == 1 && numberOfDice == 1)
+          {
+            return array[0];
+          }
+        let valuesArr = [0, 0, 0, 0, 0, 0];
+        for (let i = 0; i < array.length; i++) {
+          valuesArr[array[i] - 1]++;
+ 
+        }
+
+        let highVal = 0;
+        let retVal = "";
+        for (let i = 0; i < array.length; i++) {
+          if (valuesArr[i] > highVal) {
+            highVal = valuesArr[i];
+            retVal = i + 1;
+          }
+        }
+        document.getElementById("1").innerHTML = valuesArr[0];
+        document.getElementById("2").innerHTML = valuesArr[1];
+        document.getElementById("3").innerHTML = valuesArr[2];
+        document.getElementById("4").innerHTML = valuesArr[3];
+        document.getElementById("5").innerHTML = valuesArr[4];
+        document.getElementById("6").innerHTML = valuesArr[5];
+        return retVal;
+      }
+
+      function getDoubles() {
+        doubles = 0;
+        for (let i = 0; i < array.length; i += 2) {
+          woo = array[i];
+          woo2 = array[i + 1];
+          if (woo == woo2) {
+            doubles++;
+          }
+        }
+        return doubles;
+      }
+
+      function getTriples() {
+        triples = 0;
+        for (let i = 0; i < array.length; i += 2) {
+          woo = array[i];
+          woo2 = array[i + 1];
+          woo3 = array[i + 2];
+          if (woo == woo2 && woo == woo3) {
+            triples++;
+          }
+        }
+        return triples;
+      }
+
+      function display() {
+        diceRollsInput.innerHTML = "";
+        dicePerRollInput = medianOut.innerHTML = "";
+      }
+    </script>
+  </head>
+  <body onload="initialize();">
+    <center>
+      <form id="diceOptions">
+        Number of Rolls: <input name="numRolls" type="text" />
+        <br />
+        How many dice would you like to roll?
+        <br />
+        <label>
+          <input id="hello" type="radio" name="dice" value="1" />
+          1
+        </label>
+        <label>
+          <input id="hello1" type="radio" name="dice" value="2" />
+          2
+        </label>
+        <label>
+          <input id="hello2" type="radio" name="dice" value="3" />
+          3
+        </label>
+      </form>
+      <button onclick="recordData();">Submit</button>
+      <br />
+      <hr />
+
+      <table id="Statistics">
+        <tr>
+          <th>Median</th>
+          <th>Mean</th>
+          <th>Mode</th>
+          <th id="doublesText">Doubles</th>
+          <th id="triplesText">Triples</th>
+        </tr>
+        <tr>
+          <td id="Median">N/A</td>
+          <td id="Mean">N/A</td>
+          <td id="Mode">N/A</td>
+          <td id="Doubles">N/A</td>
+          <td id="Triples">N/A</td>
+        </tr>
+      </table>
+
+      <br />
+
+      <table id="Frequency">
+        <tr>
+          <th id="freq">Frequency</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td id="1">N/A</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td id="2">N/A</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td id="3">N/A</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td id="4">N/A</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td id="5">N/A</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td id="6">N/A</td>
+        </tr>
+      </table>
+    </center>
+  </body>
+</html>
